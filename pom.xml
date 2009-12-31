@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.323</version><!-- which version of Hudson is this plugin built against? -->
+    <version>1.335</version><!-- which version of Hudson is this plugin built against? -->
     <relativePath>../pom.xml</relativePath>
   </parent>
 
@@ -23,6 +23,19 @@
   		<organization>Ushus Technologies</organization>
   		<organizationUrl>http://www.ushustech.com/</organizationUrl>
   		<timezone>+5:30</timezone>
+  		<roles>
+  			<role>Developer</role>
+  		</roles>
+  	</developer>
+  	<developer>
+  		<name>Rajesh Nair</name>
+  		<email>rajesh.nair.mit@gmail.com</email>
+  		<organization>Ushus technologies</organization>
+  		<organizationUrl>http://www.ushustech.com/</organizationUrl>
+  		<timezone>+5:30</timezone>
+  		<roles>
+  			<role>Developer</role>
+  		</roles>
   	</developer>
   </developers>
   <organization>

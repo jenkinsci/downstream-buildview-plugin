@@ -4,5 +4,7 @@
   Since we don't really have anything dynamic here, let's just use static HTML. 
 -->
 <div>
-  This plugin is a sample plugin to explain how to write a Hudson plugin.
+   This plug-in allows you to view the full status all the downstream builds so that we can graphically see that everything for this build has been completed successfully.
+See <a href="http://wiki.hudson-ci.org/display/HUDSON/Downstream+buildview+plugin">Downstream build view</a>.
+  
 </div>
