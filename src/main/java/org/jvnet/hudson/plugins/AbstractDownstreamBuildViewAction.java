@@ -27,13 +27,23 @@
 package org.jvnet.hudson.plugins;
 
 import hudson.model.*;
+
+import java.util.logging.Logger;
+
 import org.kohsuke.stapler.export.Exported;
+
 
 /**
  * @author shinod.mohandas
  * 
  */
-public abstract class AbstractDownstreamBuildViewAction implements Action {
+public abstract class AbstractDownstreamBuildViewAction implements Action  {
+	
+	/** Our logger. */
+    private static final Logger LOG = Logger.getLogger(AbstractDownstreamBuildViewAction.class.getName());
+    
+    
+    
 
 	public final AbstractBuild<?, ?> build;
 
@@ -58,5 +68,6 @@ public abstract class AbstractDownstreamBuildViewAction implements Action {
 	public AbstractBuild getBuild() {
 		return build;
 	}
-
+	
+	
 }

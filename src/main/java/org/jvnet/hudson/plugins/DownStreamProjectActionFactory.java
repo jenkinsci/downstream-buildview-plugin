@@ -27,11 +27,11 @@ public class DownStreamProjectActionFactory extends TransientProjectActionFactor
      */
     @Override
     public Collection<? extends Action> createFor(@SuppressWarnings("unchecked") AbstractProject target) {
-        LOG.fine(this + " adds JsJobAction for " + target);
+        LOG.info(this + " adds DownStreamProjectAction for " + target);
         final ArrayList<Action> actions = new ArrayList<Action>();
         
 
-        // add the JsBuildAction to all run builds, JsRunListener will append this to the others.
+        // add the  DownstreamBuildViewAction to all run builds, DownstreamBuildViewRunListener will append this to the others.
         final List<?> builds = (List<?>) target.getBuilds();
         for (Object object : builds) {
             final AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) object;
@@ -39,11 +39,11 @@ public class DownStreamProjectActionFactory extends TransientProjectActionFactor
             if (dBuildViewAction.size() == 0) {                
                 final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(build);
                 build.addAction(downstreamBuildViewAction);
-                LOG.fine("Adding " + downstreamBuildViewAction + " to " + build);
+                LOG.info("Adding " + downstreamBuildViewAction + " to " + build);
             } else {
-                LOG.fine(build + " already has " + dBuildViewAction);
+                LOG.info(build + " already has " + dBuildViewAction);
             }
-            LOG.fine(build + ":" + build.getActions());
+            LOG.info(build + ":" + build.getActions());
         }
         return actions;
     }

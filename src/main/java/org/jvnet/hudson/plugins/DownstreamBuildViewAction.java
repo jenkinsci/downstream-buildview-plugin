@@ -26,6 +26,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
+
+
 /**
  * @author shinod.mohandas
  *
@@ -45,6 +48,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 			downstreamBuildList = findDownstream(childs, 1,
 					new ArrayList<Integer>());
 		}
+		
 	}
 
 	private List<DownstreamBuilds> findDownstream(
@@ -168,10 +172,10 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 		}
 
 		public String getIconName(Run r) {
-			if (r == null)
+			if (r == null || r.isBuilding())
 				return BallColor.GREY.anime().getImage();
 			else
-				return r.getIconColor().getImage();
+				return r.getResult().color.getImage();
 		}
 
 		public String getStatusMessage() {
@@ -183,7 +187,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 			else if (r.isBuilding())
 				return r.getDurationString();
 			else
-				return r.getTimestamp().getTime().toString();
+				return r.getTimestamp().getTime().toString()+" - "+r.getResult().toString();
 		}
 
 		public void setStatusMessage(String statusMessage) {
