@@ -46,10 +46,10 @@ THE SOFTWARE.
             				<div>
             				<j:choose>
             		     		<j:when test="${counter.last}" >
-      								<img src="${it.rootURL}/plugin/downstream-buildview/images/LastNode.gif" style="vertical-align: middle;"/>
+      								<img src="${rootURL}/plugin/downstream-buildview/images/LastNode.gif" style="vertical-align: middle;"/>
       							</j:when>
       							<j:otherwise>
-      								<img src="${it.rootURL}/plugin/downstream-buildview/images/Line_Node.gif" style="vertical-align: middle;"/>
+      								<img src="${rootURL}/plugin/downstream-buildview/images/Line_Node.gif" style="vertical-align: middle;"/>
       							</j:otherwise>
       						</j:choose>
       						<st:include page="index.jelly" it="${p}" /> 

@@ -24,8 +24,8 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
 	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-		<img src="${it.imageUrl}" style="vertical-align: middle;"/>
-		<span>${"%child_project(it.projectName,it.buildNumber,it.projectUrl,it.rootURL,it.statusMessage)"}</span>
+		<img src="${it.rootURL}/images/16x16/${it.imageUrl}" style="vertical-align: middle;"/>
+		<span>${"%child_project(it.projectName,it.buildNumber,it.projectUrl,rootURL,it.statusMessage)"}</span>
 		
       <j:forEach var="p" items="${it.childs}" varStatus="counter">
 		<div>
@@ -36,20 +36,20 @@ THE SOFTWARE.
       				<j:break/>
       			</j:when>
       			<j:when test="${depthIndex gt 1 }">
-      				<img src="${it.rootURL}/plugin/downstream-buildview/images/Line.gif" style="vertical-align: middle;"/>
-					<img src="${it.rootURL}/plugin/downstream-buildview/images/Space.gif" style="vertical-align: middle;"/>
+      				<img src="${rootURL}/plugin/downstream-buildview/images/Line.gif" style="vertical-align: middle;"/>
+					<img src="${rootURL}/plugin/downstream-buildview/images/Space.gif" style="vertical-align: middle;"/>
       			</j:when>
       			<j:otherwise>
-      				<img src="${it.rootURL}/plugin/downstream-buildview/images/Space.gif" style="vertical-align: middle;"/>
+      				<img src="${rootURL}/plugin/downstream-buildview/images/Space.gif" style="vertical-align: middle;"/>
       			</j:otherwise>
       		</j:choose>
       	</j:forEach>
       	<j:choose>
       		<j:when test="${counter.last}" >
-      			<img src="${it.rootURL}/plugin/downstream-buildview/images/LastNode.gif" style="vertical-align: middle;"/>
+      			<img src="${rootURL}/plugin/downstream-buildview/images/LastNode.gif" style="vertical-align: middle;"/>
       		</j:when>
       		<j:otherwise>
-      			<img src="${it.rootURL}/plugin/downstream-buildview/images/Line_Node.gif" style="vertical-align: middle;"/>
+      			<img src="${rootURL}/plugin/downstream-buildview/images/Line_Node.gif" style="vertical-align: middle;"/>
       		</j:otherwise>
       	</j:choose>
   			<st:include page="index.jelly" it="${p}" /> </div>
