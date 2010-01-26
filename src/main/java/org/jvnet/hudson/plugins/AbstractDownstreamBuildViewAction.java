@@ -21,13 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-/**
- * 
- */
+
 package org.jvnet.hudson.plugins;
 
 import hudson.model.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.kohsuke.stapler.export.Exported;
@@ -40,12 +40,14 @@ import org.kohsuke.stapler.export.Exported;
 public abstract class AbstractDownstreamBuildViewAction implements Action  {
 	
 	/** Our logger. */
-    private static final Logger LOG = Logger.getLogger(AbstractDownstreamBuildViewAction.class.getName());
+    protected static final Logger LOG = Logger.getLogger(AbstractDownstreamBuildViewAction.class.getName());
     
     
     
 
 	public final AbstractBuild<?, ?> build;
+	
+	private Map<String,Integer> downstreamBuilds;
 
 	protected AbstractDownstreamBuildViewAction(AbstractBuild build) {
 		this.build = build;
@@ -67,6 +69,20 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 
 	public AbstractBuild getBuild() {
 		return build;
+	}
+	
+	public int getDownstreamBuildNumber(String ProjectName) {
+		initilizeDownstreamMap();
+		return downstreamBuilds.get(ProjectName);
+	}
+	public void addDownstreamBuilds(String dowmstreamProject,int buildNumber) {
+		initilizeDownstreamMap();		
+		downstreamBuilds.put(dowmstreamProject, buildNumber);
+	}
+	
+	private void initilizeDownstreamMap(){
+		if(downstreamBuilds == null)
+			downstreamBuilds = new HashMap<String, Integer>();
 	}
 	
 	

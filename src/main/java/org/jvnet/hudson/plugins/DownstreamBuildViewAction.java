@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ * 
+ * Copyright (c) 2009, Ushus Technologies LTD.,Shinod K Mohandas
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package org.jvnet.hudson.plugins;
 
 import hudson.model.AbstractBuild;
@@ -6,6 +29,7 @@ import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.model.listeners.ItemListener;
 import hudson.tasks.BuildTrigger;
 
 import java.util.ArrayList;
@@ -18,29 +42,48 @@ import java.util.List;
  */
 public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction {
 
-    private List<DownstreamBuilds> downstreamBuildList;
+    private transient List<DownstreamBuilds> downstreamBuildList;
     private transient String rootURL;
+    private transient static final String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
     public DownstreamBuildViewAction(AbstractBuild<?, ?> build) {
         super(build);
         BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
         if (buildTrigger != null) {
             List<AbstractProject> childs = buildTrigger.getChildProjects();
-            downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>());
+          
+            for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
+                AbstractProject project = iterator.next();
+                addDownstreamBuilds(project.getName(),0);
+            }
+          //  downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
         }
         rootURL = Hudson.getInstance().getRootUrl();
     }
-
-    private List<DownstreamBuilds> findDownstream(
-            List<AbstractProject> childs, int depth,
-            List<Integer> parentChildSize) {
-        List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
+    
+    
+    private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
+    	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
             AbstractProject project = iterator.next();
             DownstreamBuilds downstreamBuild = new DownstreamBuilds();
             downstreamBuild.setProjectName(project.getName());
             downstreamBuild.setProjectUrl(project.getUrl());
-            downstreamBuild.setBuildNumber(Integer.toString(project.getNextBuildNumber()));
+            AbstractProject upproject = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
+            if(upBuildNumber!= 0){
+            	AbstractBuild upBuild = (AbstractBuild)upproject.getBuildByNumber(upBuildNumber);
+            	if(upBuild != null){
+            		for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
+            			downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getName()));
+            		}
+            	}else {
+            		downstreamBuild.setBuildNumber(0);
+            	}
+            }else{
+            	downstreamBuild.setBuildNumber(0);
+            }
+         
+            
             downstreamBuild.setDepth(depth);
             if (!(parentChildSize.size() > depth)) {
                 parentChildSize.add(childs.size());
@@ -49,26 +92,34 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             downstreamBuild.setChildNumber(childs.size());
             List<AbstractProject> childProjects = project.getDownstreamProjects();
             if (!childProjects.isEmpty()) {
-                downstreamBuild.setChilds(findDownstream(childProjects,
-                        depth + 1, parentChildSize));
+                downstreamBuild.setChilds(findDownstream(childProjects,depth + 1, parentChildSize,project.getName(),downstreamBuild.getBuildNumber()));
             }
-
             childList.add(downstreamBuild);
-
         }
         return childList;
     }
 
     public class DownstreamBuilds {
 
-        private String projectName, projectUrl, buildNumber;
+        private String projectName, projectUrl,upProjectName;
         private List<DownstreamBuilds> childs;
-        private int depth, childNumber;
+        private int depth, childNumber,buildNumber,upBuildNumber;
         private List<Integer> parentChildSize;
+        private transient AbstractProject project;
+        private transient Run<?, ?> run;
 
+        
+        private void initilize(){
+        	project = Hudson.getInstance().getItemByFullName(projectName, AbstractProject.class);
+        	run = project.getBuildByNumber(buildNumber);
+        }
+        
+        
         public List<Integer> getParentChildSize() {
             return parentChildSize;
         }
+        
+        
 
         public void setParentChildSize(List<Integer> parentChildSize) {
             this.parentChildSize = parentChildSize;
@@ -94,15 +145,22 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             return rootURL;
         }
 
-        public String getBuildNumber() {
-            return buildNumber;
+        public int getBuildNumber() {
+        	return buildNumber;
         }
+        
+        public String currentBuildNumber() {
+        	if(buildNumber == 0)
+        		return NOT_BUILT_NUMBER;
+            return Integer.toString(buildNumber);
+        }
+        
 
         public int getDepth() {
             return depth;
         }
 
-        public void setBuildNumber(String buildNumber) {
+        public void setBuildNumber(int buildNumber) {
             this.buildNumber = buildNumber;
         }
 
@@ -115,10 +173,13 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
 
         public String getImageUrl() {
-            AbstractProject proj = Hudson.getInstance().getItemByFullName(
-                    projectName, AbstractProject.class);
-            Run<?, ?> r = proj.getBuildByNumber(Integer.parseInt(buildNumber));
-            return getIconName(r);
+        	if(run == null )
+        		initilize();
+            if (run == null || run.isBuilding()) {
+                return BallColor.GREY.anime().getImage();
+            } else {
+                return run.getResult().color.getImage();
+            }
         }
 
         public List<DownstreamBuilds> getChilds() {
@@ -133,37 +194,55 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             this.depth = depth;
         }
 
-        public String getIconName(Run<?, ?> r) {
-            if (r == null || r.isBuilding()) {
-                return BallColor.GREY.anime().getImage();
-            } else {
-                return r.getResult().color.getImage();
-            }
-        }
+       
 
         public String getStatusMessage() {
-            AbstractProject proj = Hudson.getInstance().getItemByFullName(
-                    projectName, AbstractProject.class);
-            Run<?, ?> r = proj.getBuildByNumber(Integer.parseInt(buildNumber));
-            if (r == null) {
+        	if(project == null )
+        		initilize();
+            
+            if (run == null) {
                 return Result.NOT_BUILT.toString();
-            } else if (r.isBuilding()) {
-                return r.getDurationString();
+            } else if (run.isBuilding()) {
+                return run.getDurationString();
             } else {
-                return r.getTimestamp().getTime().toString() + " - " + r.getResult().toString();
+                return run.getTimestamp().getTime().toString() + " - " + run.getResult().toString();
             }
+        	
         }
+        
+        public String getUpProjectName() {
+    		return upProjectName;
+    	}
+    	public void setUpProjectName(String upProjectName) {
+    		this.upProjectName = upProjectName;
+    	}
+    	public int getUpBuildNumber() {
+    		return upBuildNumber;
+    	}
+    	public void setUpBuildNumber(int upBuildNumber) {
+    		this.upBuildNumber = upBuildNumber;
+    	}
     }
 
     public String getRootURL() {
         return rootURL;
     }
-
+    
     public List<DownstreamBuilds> getDownstreamBuildList() {
+    	BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
+        if (buildTrigger != null) {
+            List<AbstractProject> childs = buildTrigger.getChildProjects();
+            downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
+        }
         return downstreamBuildList;
     }
 
     public void setDownstreamBuildList(List<DownstreamBuilds> downstreamBuildList) {
         this.downstreamBuildList = downstreamBuildList;
     }
-}
+    
+    
+    
+  
+
+ }

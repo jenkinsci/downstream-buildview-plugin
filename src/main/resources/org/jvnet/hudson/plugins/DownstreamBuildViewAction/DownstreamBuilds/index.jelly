@@ -25,7 +25,7 @@ THE SOFTWARE.
 	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
 		<img src="${it.rootURL}/images/16x16/${it.imageUrl}" style="vertical-align: middle;"/>
-		<span>${"%child_project(it.projectName,it.buildNumber,it.projectUrl,rootURL,it.statusMessage)"}</span>
+		<span>${"%child_project(it.projectName,it.currentBuildNumber(),it.projectUrl,rootURL,it.statusMessage)"}</span>
 		
       <j:forEach var="p" items="${it.childs}" varStatus="counter">
 		<div>

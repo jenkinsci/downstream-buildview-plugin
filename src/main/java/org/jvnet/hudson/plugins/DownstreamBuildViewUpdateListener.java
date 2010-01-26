@@ -25,6 +25,7 @@ package org.jvnet.hudson.plugins;
 
 import hudson.Extension;
 import hudson.model.AbstractBuild;
+import hudson.model.Cause.UpstreamCause;
 import hudson.model.listeners.RunListener;
 import hudson.XmlFile;
 import hudson.BulkChange;
@@ -40,27 +41,26 @@ import java.util.logging.Logger;
 import java.util.logging.Logger;
 
 /**
- * This listener adds a {@link DownstreamBuildViewAction} to every new build.
+ * This listener Updtes all build number {@link DownstreamBuildViewAction} to every new build.
  * 
  * @author Shinod.Mohandas
  */
 @SuppressWarnings("unchecked")
 @Extension
-public final class DownstreamBuildViewRunListener extends RunListener<AbstractBuild> implements Saveable{
+public final class DownstreamBuildViewUpdateListener extends RunListener<AbstractBuild> implements Saveable{
 
     /** The Logger. */
-    private static final Logger LOG = Logger.getLogger(DownstreamBuildViewRunListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(DownstreamBuildViewUpdateListener.class.getName());
 
     /**
      * {@link Extension} needs parameterless constructor.
      */
-    public DownstreamBuildViewRunListener() {
+    public DownstreamBuildViewUpdateListener() {
         super(AbstractBuild.class);
     }
     
     private AbstractBuild<?, ?> build;
     
- //   public static final XStream XSTREAM = new XStream2();
 
     /**
      * {@inheritDoc}
@@ -69,12 +69,28 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
      * affected.
      */
     @Override
-    public void onCompleted(AbstractBuild r,TaskListener listener) {
-    	build = r;
-    	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(r);
-        r.addAction(downstreamBuildViewAction);
-        super.onFinalized(r);
-        save();
+    public void onStarted(AbstractBuild r,TaskListener listener) {
+    	//build = r;
+    	CauseAction ca = r.getAction(CauseAction.class);
+    	UpstreamCause upcause =null;
+    	for (Cause c : ca.getCauses()){
+    		if( c instanceof UpstreamCause){
+    			upcause = (UpstreamCause)c;
+    			String upProjectName = upcause.getUpstreamProject();
+    			int buildNumber = upcause.getUpstreamBuild();
+    			AbstractProject project = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
+    			AbstractBuild upBuild = (AbstractBuild)project.getBuildByNumber(buildNumber);
+    			build = upBuild;
+    			for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
+    				action.addDownstreamBuilds(r.getProject().getName(),r.getNumber());
+        		}
+    			super.onFinalized(build);
+                save();
+    		}
+    		
+    		
+    	}
+    	
     	
     }
     
