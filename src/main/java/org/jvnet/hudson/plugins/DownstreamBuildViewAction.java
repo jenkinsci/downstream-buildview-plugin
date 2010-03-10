@@ -29,7 +29,6 @@ import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.model.listeners.ItemListener;
 import hudson.tasks.BuildTrigger;
 
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 
     private transient List<DownstreamBuilds> downstreamBuildList;
     private transient String rootURL;
-    private transient static final String NOT_BUILT_NUMBER = "</a>#0000<a>";
+    private static final transient String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
     public DownstreamBuildViewAction(AbstractBuild<?, ?> build) {
         super(build);
@@ -150,8 +149,9 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
         
         public String currentBuildNumber() {
-        	if(buildNumber == 0)
+        	if(buildNumber == 0){
         		return NOT_BUILT_NUMBER;
+        	}
             return Integer.toString(buildNumber);
         }
         
@@ -173,9 +173,10 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
 
         public String getImageUrl() {
-        	if(run == null )
+        	if(run == null ){
         		initilize();
-            if (run == null || run.isBuilding()) {
+        	}
+        	if (run == null || run.isBuilding()) {
                 return BallColor.GREY.anime().getImage();
             } else {
                 return run.getResult().color.getImage();
@@ -197,8 +198,9 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
        
 
         public String getStatusMessage() {
-        	if(project == null )
+        	if(project == null ){
         		initilize();
+        	}
             
             if (run == null) {
                 return Result.NOT_BUILT.toString();

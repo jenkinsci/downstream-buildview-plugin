@@ -30,8 +30,6 @@ import hudson.XmlFile;
 import hudson.BulkChange;
 import hudson.model.*;
 import hudson.model.listeners.SaveableListener;
-import hudson.util.XStream2;
-import com.thoughtworks.xstream.XStream;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,7 +77,9 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
     }
     
     public synchronized void save() {
-        if(BulkChange.contains(this))   return;
+        if(BulkChange.contains(this)) {
+        	return;
+        }
         try {
         	getConfigFile().write(build);
             SaveableListener.fireOnChange(this, getConfigFile());

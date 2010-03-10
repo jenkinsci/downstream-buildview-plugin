@@ -45,7 +45,7 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
     
     
 
-	public final AbstractBuild<?, ?> build;
+	protected final AbstractBuild<?, ?> build;
 	
 	private Map<String,Integer> downstreamBuilds;
 
@@ -71,19 +71,19 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 		return build;
 	}
 	
-	public int getDownstreamBuildNumber(String ProjectName) {
-		initilizeDownstreamMap();
-		return downstreamBuilds.get(ProjectName);
+	public int getDownstreamBuildNumber(String projectName) {
+		if(downstreamBuilds == null){
+			return 0;
+		}
+		return downstreamBuilds.get(projectName);
 	}
 	public void addDownstreamBuilds(String dowmstreamProject,int buildNumber) {
-		initilizeDownstreamMap();		
+		if(downstreamBuilds == null){
+			downstreamBuilds = new HashMap<String, Integer>();
+		}
 		downstreamBuilds.put(dowmstreamProject, buildNumber);
 	}
 	
-	private void initilizeDownstreamMap(){
-		if(downstreamBuilds == null)
-			downstreamBuilds = new HashMap<String, Integer>();
-	}
-	
+		
 	
 }
