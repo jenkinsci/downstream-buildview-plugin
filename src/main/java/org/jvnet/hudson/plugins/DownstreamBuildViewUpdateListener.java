@@ -70,10 +70,15 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
     public void onStarted(AbstractBuild r,TaskListener listener) {
     	//build = r;
     	CauseAction ca = r.getAction(CauseAction.class);
-    	UpstreamCause upcause =null;
+
+
+        if (ca == null || ca.getCauses() ==null) {
+            return;
+        }
+
     	for (Cause c : ca.getCauses()){
     		if( c instanceof UpstreamCause){
-    			upcause = (UpstreamCause)c;
+    			UpstreamCause upcause = (UpstreamCause)c;
     			String upProjectName = upcause.getUpstreamProject();
     			int buildNumber = upcause.getUpstreamBuild();
     			AbstractProject project = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
