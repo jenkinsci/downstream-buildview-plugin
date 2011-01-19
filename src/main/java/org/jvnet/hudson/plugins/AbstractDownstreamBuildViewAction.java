@@ -75,7 +75,9 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 		if(downstreamBuilds == null){
 			return 0;
 		}
-		return downstreamBuilds.get(projectName);
+                Integer result = downstreamBuilds.get(projectName);
+                
+		return result!= null ? result : 0;
 	}
 	public void addDownstreamBuilds(String dowmstreamProject,int buildNumber) {
 		if(downstreamBuilds == null){
