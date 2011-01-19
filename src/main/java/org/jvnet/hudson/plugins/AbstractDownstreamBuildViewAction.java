@@ -26,8 +26,8 @@ package org.jvnet.hudson.plugins;
 
 import hudson.model.*;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import org.kohsuke.stapler.export.Exported;
@@ -81,7 +81,7 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 	}
 	public void addDownstreamBuilds(String dowmstreamProject,int buildNumber) {
 		if(downstreamBuilds == null){
-			downstreamBuilds = new HashMap<String, Integer>();
+			downstreamBuilds = new ConcurrentHashMap<String, Integer>();
 		}
 		downstreamBuilds.put(dowmstreamProject, buildNumber);
 	}
