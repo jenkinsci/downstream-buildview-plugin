@@ -10,7 +10,7 @@
   <groupId>org.jvnet.hudson.plugins</groupId>
   <artifactId>downstream-buildview</artifactId>
   <name>Downstream build view</name>
-  <version>1.6</version>
+  <version>1.7-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <description>This plug-in allows you to view the full status all the downstream builds so that we can graphically see that everything for this build has been completed successfully.</description>
