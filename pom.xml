@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <description>This plug-in allows you to view the full status all the downstream builds so that we can graphically see that everything for this build has been completed successfully.</description>
-  <url>http://wiki.hudson-ci.org/display/HUDSON/Downstream+buildview+plugin</url>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Downstream+buildview+plugin</url>
   <parent>
     <groupId>org.jvnet.hudson.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.335</version><!-- which version of Hudson is this plugin built against? -->
-    <relativePath>../pom.xml</relativePath>
+    <version>1.335</version>
   </parent>
 
   <groupId>org.jvnet.hudson.plugins</groupId>
