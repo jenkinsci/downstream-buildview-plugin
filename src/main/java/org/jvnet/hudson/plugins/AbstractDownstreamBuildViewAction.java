@@ -41,9 +41,6 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 	
 	/** Our logger. */
     protected static final Logger LOG = Logger.getLogger(AbstractDownstreamBuildViewAction.class.getName());
-    
-    
-    
 
 	protected final AbstractBuild<?, ?> build;
 	
@@ -72,15 +69,16 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 	}
 	
 	public int getDownstreamBuildNumber(String projectName) {
-		if(downstreamBuilds == null){
+		if(downstreamBuilds == null) {
 			return 0;
 		}
-                Integer result = downstreamBuilds.get(projectName);
+        Integer result = downstreamBuilds.get(projectName);
                 
 		return result!= null ? result : 0;
 	}
+
 	public void addDownstreamBuilds(String dowmstreamProject,int buildNumber) {
-		if(downstreamBuilds == null){
+		if(downstreamBuilds == null) {
 			downstreamBuilds = new ConcurrentHashMap<String, Integer>();
 		}
 		downstreamBuilds.put(dowmstreamProject, buildNumber);
