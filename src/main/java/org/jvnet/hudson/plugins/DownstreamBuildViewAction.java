@@ -29,7 +29,6 @@ import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.tasks.BuildTrigger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,16 +46,12 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 
     public DownstreamBuildViewAction(AbstractBuild<?, ?> build) {
         super(build);
-        BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
-        if (buildTrigger != null) {
-            List<AbstractProject> childs = buildTrigger.getChildProjects();
-          
-            for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
-                AbstractProject project = iterator.next();
-                addDownstreamBuilds(project.getName(),0);
-            }
-          //  downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
+        List<AbstractProject> childs = build.getProject().getDownstreamProjects();
+        for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
+            AbstractProject project = iterator.next();
+            addDownstreamBuilds(project.getName(),0);
         }
+        //  downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
         rootURL = Hudson.getInstance().getRootUrl();
     }
     
@@ -231,11 +226,8 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     }
     
     public List<DownstreamBuilds> getDownstreamBuildList() {
-    	BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
-        if (buildTrigger != null) {
-            List<AbstractProject> childs = buildTrigger.getChildProjects();
-            downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
-        }
+        List<AbstractProject> childs = build.getProject().getDownstreamProjects();
+        downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
         return downstreamBuildList;
     }
 
