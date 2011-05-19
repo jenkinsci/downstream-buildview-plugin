@@ -29,7 +29,6 @@ import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.tasks.BuildTrigger;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -47,19 +46,13 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 
     public DownstreamBuildViewAction(AbstractBuild<?, ?> build) {
         super(build);
-        BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
-        if (buildTrigger != null) {
-            List<AbstractProject> childs = buildTrigger.getChildProjects();
-          
-            for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
-                AbstractProject project = iterator.next();
-                addDownstreamBuilds(project.getName(),0);
-            }
-          //  downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
+        List<AbstractProject> childs = build.getProject().getDownstreamProjects();
+        for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
+            AbstractProject project = iterator.next();
+            addDownstreamBuilds(project.getName(),0);
         }
         rootURL = Hudson.getInstance().getRootUrl();
     }
-    
     
     private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
@@ -106,19 +99,15 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         private List<Integer> parentChildSize;
         private transient AbstractProject project;
         private transient Run<?, ?> run;
-
         
         private void initilize(){
         	project = Hudson.getInstance().getItemByFullName(projectName, AbstractProject.class);
         	run = project.getBuildByNumber(buildNumber);
         }
         
-        
         public List<Integer> getParentChildSize() {
             return parentChildSize;
         }
-        
-        
 
         public void setParentChildSize(List<Integer> parentChildSize) {
             this.parentChildSize = parentChildSize;
@@ -154,7 +143,6 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         	}
             return Integer.toString(buildNumber);
         }
-        
 
         public int getDepth() {
             return depth;
@@ -195,8 +183,6 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             this.depth = depth;
         }
 
-       
-
         public String getStatusMessage() {
         	if(project == null ){
         		initilize();
@@ -231,20 +217,12 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     }
     
     public List<DownstreamBuilds> getDownstreamBuildList() {
-    	BuildTrigger buildTrigger = build.getProject().getPublishersList().get(BuildTrigger.class);
-        if (buildTrigger != null) {
-            List<AbstractProject> childs = buildTrigger.getChildProjects();
-            downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
-        }
+        List<AbstractProject> childs = build.getProject().getDownstreamProjects();
+        downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
         return downstreamBuildList;
     }
 
     public void setDownstreamBuildList(List<DownstreamBuilds> downstreamBuildList) {
         this.downstreamBuildList = downstreamBuildList;
     }
-    
-    
-    
-  
-
  }
