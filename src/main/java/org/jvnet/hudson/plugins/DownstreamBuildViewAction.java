@@ -51,6 +51,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             AbstractProject project = iterator.next();
             addDownstreamBuilds(project.getName(),0);
         }
+        //  downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
         rootURL = Hudson.getInstance().getRootUrl();
     }
     
