@@ -23,38 +23,36 @@
   </scm>
 
   <developers>
-  	<developer>
-  		<id>shinodkm</id>
-  		<name>Shinod Mohandas</name>
-  		<email>shinodkm@gmail.com</email>
-  		<url>http://in.linkedin.com/in/shinodkm</url>
-  		<organization>Ushus Technologies</organization>
-  		<organizationUrl>http://www.ushustech.com/</organizationUrl>
-  		<timezone>+5:30</timezone>
-  		<roles>
-  			<role>Developer</role>
-  		</roles>
-  	</developer>
-  	<developer>
-  		<name>Rajesh Nair</name>
-  		<email>rajesh.nair.mit@gmail.com</email>
-  		<organization>Ushus technologies</organization>
-  		<organizationUrl>http://www.ushustech.com/</organizationUrl>
-  		<timezone>+5:30</timezone>
-  		<roles>
-  			<role>Developer</role>
-  		</roles>
-  	</developer>
+    <developer>
+      <id>shinodkm</id>
+      <name>Shinod Mohandas</name>
+      <email>shinodkm@gmail.com</email>
+      <url>http://in.linkedin.com/in/shinodkm</url>
+      <organization>Ushus Technologies</organization>
+      <organizationUrl>http://www.ushustech.com/</organizationUrl>
+      <timezone>+5:30</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <name>Rajesh Nair</name>
+      <email>rajesh.nair.mit@gmail.com</email>
+      <organization>Ushus technologies</organization>
+      <organizationUrl>http://www.ushustech.com/</organizationUrl>
+      <timezone>+5:30</timezone>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
   </developers>
   <organization>
-  	<name>Ushus Technologies</name>
-  	<url>http://www.ushustech.com/</url>
+    <name>Ushus Technologies</name>
+    <url>http://www.ushustech.com/</url>
   </organization>
   <build>
-  	<defaultGoal>package</defaultGoal>
-  	<finalName>${project.artifactId}</finalName>
-  	<plugins>
-  	</plugins>
+    <defaultGoal>package</defaultGoal>
+    <finalName>${project.artifactId}</finalName>
   </build>
 
   <!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
