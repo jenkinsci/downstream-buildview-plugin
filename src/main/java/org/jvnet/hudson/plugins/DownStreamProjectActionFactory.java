@@ -50,7 +50,7 @@ public class DownStreamProjectActionFactory extends TransientProjectActionFactor
      */
     @Override
     public Collection<? extends Action> createFor(@SuppressWarnings("unchecked") AbstractProject target) {
-        LOG.info(this + " adds DownStreamProjectAction for " + target);
+        LOG.fine(this + " adds DownStreamProjectAction for " + target);
         final ArrayList<Action> actions = new ArrayList<Action>();
         
 
@@ -62,11 +62,11 @@ public class DownStreamProjectActionFactory extends TransientProjectActionFactor
             if (dBuildViewAction.size() == 0) {                
                 final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(build);
                 build.addAction(downstreamBuildViewAction);
-                LOG.info("Adding " + downstreamBuildViewAction + " to " + build);
+                LOG.fine("Adding " + downstreamBuildViewAction + " to " + build);
             } else {
-                LOG.info(build + " already has " + dBuildViewAction);
+                LOG.fine(build + " already has " + dBuildViewAction);
             }
-            LOG.info(build + ":" + build.getActions());
+            LOG.fine(build + ":" + build.getActions());
         }
         return actions;
     }
