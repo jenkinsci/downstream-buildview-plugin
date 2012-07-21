@@ -67,7 +67,7 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
      * affected.
      */
     @Override
-    public void onCompleted(AbstractBuild r,TaskListener listener) {
+    public void onStarted(AbstractBuild r,TaskListener listener) {
     	build = r;
     	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(r);
         r.addAction(downstreamBuildViewAction);
