@@ -85,7 +85,7 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
     			AbstractBuild upBuild = (AbstractBuild)project.getBuildByNumber(buildNumber);
     			build = upBuild;
     			for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
-    				action.addDownstreamBuilds(r.getProject().getName(),r.getNumber());
+    				action.addDownstreamBuilds(r.getProject().getFullName(),r.getNumber());
         		}
     			super.onFinalized(build);
                 save();

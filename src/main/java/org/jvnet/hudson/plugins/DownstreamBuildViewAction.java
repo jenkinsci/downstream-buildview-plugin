@@ -49,7 +49,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         List<AbstractProject> childs = build.getProject().getDownstreamProjects();
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
             AbstractProject project = iterator.next();
-            addDownstreamBuilds(project.getName(),0);
+            addDownstreamBuilds(project.getFullName(),0);
         }
         rootURL = Hudson.getInstance().getRootUrl();
     }
@@ -59,14 +59,14 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
             AbstractProject project = iterator.next();
             DownstreamBuilds downstreamBuild = new DownstreamBuilds();
-            downstreamBuild.setProjectName(project.getName());
+            downstreamBuild.setProjectName(project.getFullName());
             downstreamBuild.setProjectUrl(project.getUrl());
             AbstractProject upproject = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
             if(upBuildNumber!= 0){
             	AbstractBuild upBuild = (AbstractBuild)upproject.getBuildByNumber(upBuildNumber);
             	if(upBuild != null){
             		for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
-            			downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getName()));
+            			downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getFullName()));
             		}
             	}else {
             		downstreamBuild.setBuildNumber(0);
@@ -84,7 +84,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             downstreamBuild.setChildNumber(childs.size());
             List<AbstractProject> childProjects = project.getDownstreamProjects();
             if (!childProjects.isEmpty()) {
-                downstreamBuild.setChilds(findDownstream(childProjects,depth + 1, parentChildSize,project.getName(),downstreamBuild.getBuildNumber()));
+                downstreamBuild.setChilds(findDownstream(childProjects,depth + 1, parentChildSize,project.getFullName(),downstreamBuild.getBuildNumber()));
             }
             childList.add(downstreamBuild);
         }
@@ -218,7 +218,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     
     public List<DownstreamBuilds> getDownstreamBuildList() {
         List<AbstractProject> childs = build.getProject().getDownstreamProjects();
-        downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getName(),build.getNumber());
+        downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getFullName(),build.getNumber());
         return downstreamBuildList;
     }
 
