@@ -68,14 +68,12 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
      */
     @Override
     public void onStarted(AbstractBuild r,TaskListener listener) {
-    	//build = r;
+        r.addAction(new DownstreamBuildViewAction(r));
+
     	CauseAction ca = r.getAction(CauseAction.class);
-
-
         if (ca == null || ca.getCauses() ==null) {
             return;
         }
-
     	for (Cause c : ca.getCauses()){
     		if( c instanceof UpstreamCause){
     			UpstreamCause upcause = (UpstreamCause)c;
@@ -90,11 +88,7 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
     			super.onFinalized(build);
                 save();
     		}
-    		
-    		
     	}
-    	
-    	
     }
     
     public synchronized void save() {
