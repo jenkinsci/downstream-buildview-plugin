@@ -47,7 +47,9 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         rootURL = Hudson.getInstance().getRootUrl();
     }
 
-    private List<DownstreamBuilds> findDownstream(HashMap<AbstractProject,HashSet<AbstractBuild>> childProjects, int depth, List<Integer> parentChildSize) {
+    private List<DownstreamBuilds> findDownstream(HashMap<AbstractProject,
+            HashSet<AbstractBuild>> childProjects,
+            int depth, List<Integer> parentChildSize){
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
         Integer childsCount = getChildsCount(childProjects);
 
@@ -93,9 +95,12 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
                 if(!downstreamBuildsRange.isEmpty()){
                     List<AbstractBuild> downBuilds =  (List<AbstractBuild>)downProject.getBuilds(downstreamBuildsRange);
                     for(AbstractBuild downBuild : downBuilds){
-                        Cause.UpstreamCause downBuildCause = (Cause.UpstreamCause)downBuild.getCause(Cause.UpstreamCause.class);
-                        if(downBuildCause.pointsTo(build)){
-                            result.get(downProject).add(downBuild);
+                        for(Object cause  : downBuild.getCauses()){
+                            if(cause instanceof Cause.UpstreamCause){
+                                if(((Cause.UpstreamCause)cause).pointsTo(build)){
+                                    result.get(downProject).add(downBuild);
+                                }
+                            }
                         }
                     }
                 }
