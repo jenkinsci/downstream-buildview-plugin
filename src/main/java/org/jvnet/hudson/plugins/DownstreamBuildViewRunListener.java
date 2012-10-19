@@ -30,6 +30,7 @@ import hudson.XmlFile;
 import hudson.BulkChange;
 import hudson.model.*;
 import hudson.model.listeners.SaveableListener;
+import jenkins.model.Jenkins;
 
 import java.io.File;
 import java.io.IOException;
@@ -69,13 +70,17 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
     @Override
     public void onCompleted(AbstractBuild r,TaskListener listener) {
     	build = r;
-    	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(r);
-        r.addAction(downstreamBuildViewAction);
+
+        if ( build.getAction(DownstreamBuildViewAction.class) != null) {
+            final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(r);
+            r.addAction(downstreamBuildViewAction);
+        }
+
         super.onFinalized(r);
         save();
     	
     }
-    
+
     public synchronized void save() {
         if(BulkChange.contains(this)) {
         	return;
