@@ -23,16 +23,9 @@
  */
 package org.jvnet.hudson.plugins;
 
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-import hudson.model.BallColor;
-import hudson.model.Hudson;
-import hudson.model.Result;
-import hudson.model.Run;
+import hudson.model.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author shinod.mohandas
@@ -53,42 +46,93 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
         rootURL = Hudson.getInstance().getRootUrl();
     }
-    
-    private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
+
+    private List<DownstreamBuilds> findDownstream(HashMap<AbstractProject,
+            HashSet<AbstractBuild>> childProjects,
+            int depth, List<Integer> parentChildSize){
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
-        for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
-            AbstractProject project = iterator.next();
-            DownstreamBuilds downstreamBuild = new DownstreamBuilds();
-            downstreamBuild.setProjectName(project.getFullName());
-            downstreamBuild.setProjectUrl(project.getUrl());
-            AbstractProject upproject = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
-            if(upBuildNumber!= 0){
-            	AbstractBuild upBuild = (AbstractBuild)upproject.getBuildByNumber(upBuildNumber);
-            	if(upBuild != null){
-            		for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
-            			downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getFullName()));
-            		}
-            	}else {
-            		downstreamBuild.setBuildNumber(0);
-            	}
-            }else{
-            	downstreamBuild.setBuildNumber(0);
-            }
-         
-            
-            downstreamBuild.setDepth(depth);
+        Integer childsCount = getChildsCount(childProjects);
+
+        for(Map.Entry<AbstractProject,HashSet<AbstractBuild>> entry : childProjects.entrySet() ){
+            AbstractProject downProject = entry.getKey();
+            HashSet<AbstractBuild> downBuilds = entry.getValue();
+
             if (!(parentChildSize.size() > depth)) {
-                parentChildSize.add(childs.size());
+                parentChildSize.add(childsCount);
             }
-            downstreamBuild.setParentChildSize(parentChildSize);
-            downstreamBuild.setChildNumber(childs.size());
-            List<AbstractProject> childProjects = project.getDownstreamProjects();
-            if (!childProjects.isEmpty()) {
-                downstreamBuild.setChilds(findDownstream(childProjects,depth + 1, parentChildSize,project.getFullName(),downstreamBuild.getBuildNumber()));
+            List<AbstractProject> downProjects = downProject.getDownstreamProjects();
+            if(downBuilds.isEmpty()){
+                DownstreamBuilds downstreamBuild = instantiateDownstreamBuids(depth, parentChildSize, childsCount, downProject);
+                if (!downProjects.isEmpty()) {
+                    HashMap<AbstractProject,HashSet<AbstractBuild>> downChildProjects = getImmediateDownstreamProjectsToBuildsMap(downProjects, null);
+                    downstreamBuild.setChilds(findDownstream(downChildProjects, depth + 1, parentChildSize));
+                }
+                childList.add(downstreamBuild);
+            } else {
+                for(AbstractBuild downBuild : downBuilds){
+                    DownstreamBuilds downstreamBuild = instantiateDownstreamBuids(depth, parentChildSize, childsCount, downProject);
+                    downstreamBuild.setBuildNumber(downBuild.getNumber());
+                    if (!downProjects.isEmpty()) {
+                        HashMap<AbstractProject,HashSet<AbstractBuild>> downChildProjects = getImmediateDownstreamProjectsToBuildsMap(downProjects, downBuild);
+                        downstreamBuild.setChilds(findDownstream(downChildProjects, depth + 1, parentChildSize));
+                    }
+                    childList.add(downstreamBuild);
+                }
             }
-            childList.add(downstreamBuild);
         }
+
         return childList;
+    }
+
+    private HashMap<AbstractProject, HashSet<AbstractBuild>> getImmediateDownstreamProjectsToBuildsMap(List<AbstractProject> downstreamProjects, AbstractBuild build) {
+        HashMap<AbstractProject,HashSet<AbstractBuild>> result = new HashMap<AbstractProject, HashSet<AbstractBuild>>();
+        for(AbstractProject downProject : downstreamProjects){
+            if(!result.containsKey(downProject)){
+                result.put(downProject, new HashSet<AbstractBuild>());
+            }
+            if(build != null && build.getNumber() != 0){
+                Fingerprint.RangeSet downstreamBuildsRange = build.getDownstreamRelationship(downProject);
+                if(!downstreamBuildsRange.isEmpty()){
+                    List<AbstractBuild> downBuilds =  (List<AbstractBuild>)downProject.getBuilds(downstreamBuildsRange);
+                    for(AbstractBuild downBuild : downBuilds){
+                        for(Object cause  : downBuild.getCauses()){
+                            if(cause instanceof Cause.UpstreamCause){
+                                if(((Cause.UpstreamCause)cause).pointsTo(build)){
+                                    result.get(downProject).add(downBuild);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private HashMap<AbstractProject,HashSet<AbstractBuild>> getImmediateDownstreamProjectsToBuildsMap(AbstractProject project, AbstractBuild build){
+        List<AbstractProject> downstreamProjects = (List<AbstractProject>)project.getDownstreamProjects();
+        HashMap<AbstractProject, HashSet<AbstractBuild>> result = getImmediateDownstreamProjectsToBuildsMap(downstreamProjects, build);
+        return result;
+    }
+
+    private DownstreamBuilds instantiateDownstreamBuids(int depth, List<Integer> parentChildSize, Integer childsCount, AbstractProject downProject) {
+        DownstreamBuilds downstreamBuild = new DownstreamBuilds();
+        downstreamBuild.setProjectName(downProject.getFullName());
+        downstreamBuild.setProjectUrl(downProject.getUrl());
+        downstreamBuild.setBuildNumber(0);
+        downstreamBuild.setDepth(depth);
+        downstreamBuild.setParentChildSize(parentChildSize);
+        downstreamBuild.setChildNumber(childsCount);
+        return downstreamBuild;
+    }
+
+    private Integer getChildsCount(HashMap<AbstractProject, HashSet<AbstractBuild>> immediateDownstreamProjects) {
+        Integer childsCount = 0;
+        for(Map.Entry<AbstractProject,HashSet<AbstractBuild>> entry : immediateDownstreamProjects.entrySet() ){
+            //if downstream project has running direct builds, then counting builds count, else counting single project as child
+            childsCount = childsCount + entry.getValue().size() > 0 ? entry.getValue().size() : 1;
+        }
+        return childsCount;
     }
 
     public class DownstreamBuilds {
@@ -217,8 +261,8 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     }
     
     public List<DownstreamBuilds> getDownstreamBuildList() {
-        List<AbstractProject> childs = build.getProject().getDownstreamProjects();
-        downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getFullName(),build.getNumber());
+        HashMap<AbstractProject,HashSet<AbstractBuild>> immediateDownstreamProjectsBuilds = getImmediateDownstreamProjectsToBuildsMap(build.getProject(), build);
+        downstreamBuildList = findDownstream(immediateDownstreamProjectsBuilds, 1, new ArrayList<Integer>());
         return downstreamBuildList;
     }
 
