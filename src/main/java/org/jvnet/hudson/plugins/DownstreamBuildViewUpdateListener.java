@@ -82,7 +82,10 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
     			String upProjectName = upcause.getUpstreamProject();
     			int buildNumber = upcause.getUpstreamBuild();
     			AbstractProject project = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
+				// This can be null if this project was started by a non-project (ie, promotion action)
+				if (project == null) continue;
     			AbstractBuild upBuild = (AbstractBuild)project.getBuildByNumber(buildNumber);
+				if (upBuild == null) continue;
     			build = upBuild;
     			for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
     				action.addDownstreamBuilds(r.getProject().getFullName(),r.getNumber());
