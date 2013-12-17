@@ -17,9 +17,9 @@
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Downstream+buildview+plugin</url>
 
   <scm>
-   <connection>scm:git:git://github.com/jenkinsci/downstream-buildview-plugin.git</connection>
-   <developerConnection>scm:git:git@github.com:jenkinsci/downstream-buildview-plugin.git</developerConnection>
-   <url>https://github.com/jenkinsci/downstream-buildview-plugin</url>
+      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
   </scm>
 
   <developers>
@@ -50,43 +50,17 @@
     <name>Ushus Technologies</name>
     <url>http://www.ushustech.com/</url>
   </organization>
-  <build>
-    <defaultGoal>package</defaultGoal>
-    <finalName>${project.artifactId}</finalName>
-  </build>
 
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
       <url>http://repo.jenkins-ci.org/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository><!-- only until we release ant and javadoc plugins -->
-      <id>maven.jenkins-ci.org</id>
-      <url>http://maven.jenkins-ci.org/content/repositories/snapshots/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>repo.jenkins-ci.org</id>
       <url>http://repo.jenkins-ci.org/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
     </pluginRepository>
   </pluginRepositories>
 </project>
