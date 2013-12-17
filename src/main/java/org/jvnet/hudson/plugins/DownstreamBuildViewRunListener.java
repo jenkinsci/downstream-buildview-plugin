@@ -25,10 +25,8 @@ package org.jvnet.hudson.plugins;
 
 import hudson.Extension;
 import hudson.model.AbstractBuild;
+import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
-import hudson.model.*;
-
-import java.util.logging.Logger;
 
 /**
  * This listener adds a {@link DownstreamBuildViewAction} to every new build.
@@ -38,9 +36,6 @@ import java.util.logging.Logger;
 @SuppressWarnings("unchecked")
 @Extension
 public final class DownstreamBuildViewRunListener extends RunListener<AbstractBuild> {
-
-    /** The Logger. */
-    private static final Logger LOG = Logger.getLogger(DownstreamBuildViewRunListener.class.getName());
 
     /**
      * {@link Extension} needs parameterless constructor.
