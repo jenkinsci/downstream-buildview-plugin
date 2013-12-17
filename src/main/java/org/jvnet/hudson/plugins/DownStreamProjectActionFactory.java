@@ -60,7 +60,7 @@ public class DownStreamProjectActionFactory extends TransientProjectActionFactor
             final AbstractBuild<?, ?> build = (AbstractBuild<?, ?>) object;
             final List<DownstreamBuildViewAction> dBuildViewAction = build.getActions(DownstreamBuildViewAction.class);
             if (dBuildViewAction.size() == 0) {                
-                final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(build);
+                final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction();
                 build.addAction(downstreamBuildViewAction);
                 LOG.fine("Adding " + downstreamBuildViewAction + " to " + build);
             } else {

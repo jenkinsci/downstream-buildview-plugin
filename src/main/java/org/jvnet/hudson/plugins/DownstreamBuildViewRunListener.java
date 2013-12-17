@@ -33,7 +33,6 @@ import hudson.model.listeners.SaveableListener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import java.util.logging.Logger;
 
@@ -69,7 +68,7 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
     @Override
     public void onStarted(AbstractBuild r,TaskListener listener) {
     	build = r;
-    	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction(r);
+    	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction();
         r.addAction(downstreamBuildViewAction);
         super.onFinalized(r);
         save();

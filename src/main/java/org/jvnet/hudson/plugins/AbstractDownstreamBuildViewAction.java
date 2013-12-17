@@ -29,6 +29,7 @@ import hudson.model.*;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import jenkins.model.RunAction2;
 
 import org.kohsuke.stapler.export.Exported;
 
@@ -37,18 +38,16 @@ import org.kohsuke.stapler.export.Exported;
  * @author shinod.mohandas
  * 
  */
-public abstract class AbstractDownstreamBuildViewAction implements Action  {
+public abstract class AbstractDownstreamBuildViewAction implements RunAction2 {
 	
 	/** Our logger. */
     protected static final Logger LOG = Logger.getLogger(AbstractDownstreamBuildViewAction.class.getName());
 
-	protected final AbstractBuild<?, ?> build;
+	protected transient AbstractBuild<?, ?> build;
 	
 	private Map<String,Integer> downstreamBuilds;
 
-	protected AbstractDownstreamBuildViewAction(AbstractBuild build) {
-		this.build = build;
-	}
+	protected AbstractDownstreamBuildViewAction() {}
 
 	public String getDisplayName() {
 		return "Downstream build view";
@@ -63,6 +62,14 @@ public abstract class AbstractDownstreamBuildViewAction implements Action  {
 	public String getIconFileName() {
 		return "clipboard.gif";
 	}
+
+    @Override public void onAttached(Run<?, ?> r) {
+        build = (AbstractBuild<?, ?>) r;
+    }
+
+    @Override public void onLoad(Run<?, ?> r) {
+        build = (AbstractBuild<?, ?>) r;
+    }
 
 	public AbstractBuild getBuild() {
 		return build;

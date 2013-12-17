@@ -44,8 +44,8 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     private transient String rootURL;
     private static final transient String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
-    public DownstreamBuildViewAction(AbstractBuild<?, ?> build) {
-        super(build);
+    @Override public void onAttached(Run<?, ?> r) {
+        super.onAttached(r);
         List<AbstractProject> childs = build.getProject().getDownstreamProjects();
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
             AbstractProject project = iterator.next();
