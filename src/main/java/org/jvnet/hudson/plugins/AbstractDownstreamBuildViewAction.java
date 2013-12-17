@@ -51,7 +51,6 @@ public abstract class AbstractDownstreamBuildViewAction implements RunAction2 {
 
 	public String getDisplayName() {
 		return "Downstream build view";
-		// return Messages.AbstractTestResultAction_getDisplayName();
 	}
 
 	@Exported(visibility = 2)
@@ -60,7 +59,7 @@ public abstract class AbstractDownstreamBuildViewAction implements RunAction2 {
 	}
 
 	public String getIconFileName() {
-		return "clipboard.gif";
+		return downstreamBuilds == null ? null : "clipboard.gif";
 	}
 
     @Override public void onAttached(Run<?, ?> r) {
