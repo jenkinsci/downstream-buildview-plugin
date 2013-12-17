@@ -41,7 +41,6 @@ import java.util.List;
 public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction {
 
     private transient List<DownstreamBuilds> downstreamBuildList;
-    private transient String rootURL;
     private static final transient String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
     @Override public void onAttached(Run<?, ?> r) {
@@ -51,7 +50,6 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             AbstractProject project = iterator.next();
             addDownstreamBuilds(project.getFullName(),0);
         }
-        rootURL = Hudson.getInstance().getRootUrl();
     }
     
     private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
@@ -127,10 +125,6 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
 
         public void setProjectUrl(String projectUrl) {
             this.projectUrl = projectUrl;
-        }
-
-        public String getRootURL() {
-            return rootURL;
         }
 
         public int getBuildNumber() {
@@ -212,10 +206,6 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     	}
     }
 
-    public String getRootURL() {
-        return rootURL;
-    }
-    
     public List<DownstreamBuilds> getDownstreamBuildList() {
         List<AbstractProject> childs = build.getProject().getDownstreamProjects();
         downstreamBuildList = findDownstream(childs, 1, new ArrayList<Integer>(),build.getParent().getFullName(),build.getNumber());

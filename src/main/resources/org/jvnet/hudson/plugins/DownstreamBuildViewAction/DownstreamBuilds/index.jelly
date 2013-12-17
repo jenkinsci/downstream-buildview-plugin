@@ -24,8 +24,8 @@ THE SOFTWARE.
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
 	xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
 	xmlns:f="/lib/form" xmlns:i="jelly:fmt">
-		<img src="${it.rootURL}/images/16x16/${it.imageUrl}" style="vertical-align: middle;"/>
-		<span>${"%child_project(it.projectName,it.currentBuildNumber(),it.projectUrl,rootURL,it.statusMessage)"}</span>
+		<img src="${rootURL}/images/16x16/${it.imageUrl}" style="vertical-align: middle;"/>
+                <a href="${rootURL}/${it.projectUrl}" class="model-link">${it.projectName}</a> build number <a href="${rootURL}/${it.projectUrl}${it.currentBuildNumber()}/" class="model-link">${it.currentBuildNumber()}</a> (${it.statusMessage})
 		
       <j:forEach var="p" items="${it.childs}" varStatus="counter">
 		<div>
