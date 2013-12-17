@@ -27,14 +27,8 @@ import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.Cause.UpstreamCause;
 import hudson.model.listeners.RunListener;
-import hudson.XmlFile;
-import hudson.BulkChange;
 import hudson.model.*;
-import hudson.model.listeners.SaveableListener;
-
-import java.io.File;
 import java.io.IOException;
-import java.util.logging.Logger;
 
 import java.util.logging.Logger;
 
@@ -45,20 +39,10 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("unchecked")
 @Extension
-public final class DownstreamBuildViewUpdateListener extends RunListener<AbstractBuild> implements Saveable{
+public final class DownstreamBuildViewUpdateListener extends RunListener<AbstractBuild<?,?>> {
 
     /** The Logger. */
     private static final Logger LOG = Logger.getLogger(DownstreamBuildViewUpdateListener.class.getName());
-
-    /**
-     * {@link Extension} needs parameterless constructor.
-     */
-    public DownstreamBuildViewUpdateListener() {
-        super(AbstractBuild.class);
-    }
-    
-    private AbstractBuild<?, ?> build;
-    
 
     /**
      * {@inheritDoc}
@@ -67,16 +51,8 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
      * affected.
      */
     @Override
-    public void onStarted(AbstractBuild r,TaskListener listener) {
-    	//build = r;
-    	CauseAction ca = r.getAction(CauseAction.class);
-
-
-        if (ca == null || ca.getCauses() ==null) {
-            return;
-        }
-
-    	for (Cause c : ca.getCauses()){
+    public void onStarted(AbstractBuild<?,?> r,TaskListener listener) {
+    	for (Cause c : r.getCauses()){
     		if( c instanceof UpstreamCause){
     			UpstreamCause upcause = (UpstreamCause)c;
     			String upProjectName = upcause.getUpstreamProject();
@@ -86,36 +62,16 @@ public final class DownstreamBuildViewUpdateListener extends RunListener<Abstrac
 				if (project == null) continue;
     			AbstractBuild upBuild = (AbstractBuild)project.getBuildByNumber(buildNumber);
 				if (upBuild == null) continue;
-    			build = upBuild;
     			for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
     				action.addDownstreamBuilds(r.getProject().getFullName(),r.getNumber());
         		}
-    			super.onFinalized(build);
-                save();
+                try {
+                    upBuild.save();
+                } catch (IOException e) {
+                    LOG.info("Failed to save ");
+                }
     		}
-    		
-    		
     	}
-    	
-    	
     }
-    
-    public synchronized void save() {
-        if(BulkChange.contains(this)) {
-        	return;
-        }
-        try {
-        	getConfigFile().write(build);
-            SaveableListener.fireOnChange(this, getConfigFile());
-        } catch (IOException e) {
-        	LOG.info("Failed to save ");
-        }
-    }
-	
-	private XmlFile getConfigFile() {
-		Run r= (Run)build;
-		return new XmlFile(r.XSTREAM,new File(r.getRootDir(),"build.xml" ));
-	}
-
     
 }

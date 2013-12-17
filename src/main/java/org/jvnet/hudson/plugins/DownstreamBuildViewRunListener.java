@@ -26,13 +26,7 @@ package org.jvnet.hudson.plugins;
 import hudson.Extension;
 import hudson.model.AbstractBuild;
 import hudson.model.listeners.RunListener;
-import hudson.XmlFile;
-import hudson.BulkChange;
 import hudson.model.*;
-import hudson.model.listeners.SaveableListener;
-
-import java.io.File;
-import java.io.IOException;
 
 import java.util.logging.Logger;
 
@@ -43,7 +37,7 @@ import java.util.logging.Logger;
  */
 @SuppressWarnings("unchecked")
 @Extension
-public final class DownstreamBuildViewRunListener extends RunListener<AbstractBuild> implements Saveable{
+public final class DownstreamBuildViewRunListener extends RunListener<AbstractBuild> {
 
     /** The Logger. */
     private static final Logger LOG = Logger.getLogger(DownstreamBuildViewRunListener.class.getName());
@@ -55,10 +49,6 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
         super(AbstractBuild.class);
     }
     
-    private AbstractBuild<?, ?> build;
-    
- //   public static final XStream XSTREAM = new XStream2();
-
     /**
      * {@inheritDoc}
      * 
@@ -67,30 +57,8 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
      */
     @Override
     public void onStarted(AbstractBuild r,TaskListener listener) {
-    	build = r;
     	final DownstreamBuildViewAction downstreamBuildViewAction = new DownstreamBuildViewAction();
         r.addAction(downstreamBuildViewAction);
-        super.onFinalized(r);
-        save();
-    	
-    }
-    
-    public synchronized void save() {
-        if(BulkChange.contains(this)) {
-        	return;
-        }
-        try {
-        	getConfigFile().write(build);
-            SaveableListener.fireOnChange(this, getConfigFile());
-        } catch (IOException e) {
-        	LOG.info("Failed to save ");
-        }
-    }
-	
-	private XmlFile getConfigFile() {
-		Run r= (Run)build;
-		return new XmlFile(r.XSTREAM,new File(r.getRootDir(),"build.xml" ));
 	}
-
     
 }
