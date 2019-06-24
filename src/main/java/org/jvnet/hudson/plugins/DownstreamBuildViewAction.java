@@ -23,12 +23,14 @@
  */
 package org.jvnet.hudson.plugins;
 
+import org.jvnet.hudson.plugins.DownstreamBuildViewWrapper.DescriptorImpl;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
+import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -39,7 +41,6 @@ import java.util.List;
  *
  */
 public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction {
-
     private transient List<DownstreamBuilds> downstreamBuildList;
     private static final transient String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
@@ -51,7 +52,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             addDownstreamBuilds(project.getFullName(),0);
         }
     }
-    
+
     private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
@@ -72,8 +73,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             }else{
             	downstreamBuild.setBuildNumber(0);
             }
-         
-            
+
             downstreamBuild.setDepth(depth);
             if (!(parentChildSize.size() > depth)) {
                 parentChildSize.add(childs.size());
@@ -89,20 +89,19 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         return childList;
     }
 
-    public class DownstreamBuilds {
-
-        private String projectName, projectUrl,upProjectName;
+    public class DownstreamBuilds{
+    	private String projectName, projectUrl,upProjectName;
         private List<DownstreamBuilds> childs;
         private int depth, childNumber,buildNumber,upBuildNumber;
         private List<Integer> parentChildSize;
         private transient AbstractProject project;
         private transient Run<?, ?> run;
-        
+
         private void initilize(){
         	project = Hudson.getInstance().getItemByFullName(projectName, AbstractProject.class);
         	run = project.getBuildByNumber(buildNumber);
         }
-        
+
         public List<Integer> getParentChildSize() {
             return parentChildSize;
         }
@@ -130,7 +129,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         public int getBuildNumber() {
         	return buildNumber;
         }
-        
+
         public String currentBuildNumber() {
         	if(buildNumber == 0){
         		return NOT_BUILT_NUMBER;
@@ -154,15 +153,24 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             this.childNumber = childNumber;
         }
 
+        public DescriptorImpl getDescriptorImpl() {
+    		return (DescriptorImpl) Jenkins.getInstance().getDescriptorOrDie(DownstreamBuildViewWrapper.class);
+    	}
         public String getImageUrl() {
-        	if(run == null ){
-        		initilize();
-        	}
-        	if (run == null || run.isBuilding()) {
+        	DescriptorImpl descriptor = getDescriptorImpl();
+            if(run == null ){
+         	  initilize();
+         	}
+        	if(run == null || run.isBuilding())
+        	{
+        	  if(descriptor.isDisableBlink() == false){
                 return BallColor.GREY.anime().getImage();
-            } else {
-                return run.getResult().color.getImage();
-            }
+        	  }
+        	  else{
+                return BallColor.GREY.getImage();
+        	  }
+        	}
+        	return run.getResult().color.getImage();
         }
 
         public List<DownstreamBuilds> getChilds() {
@@ -181,7 +189,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         	if(project == null ){
         		initilize();
         	}
-            
+
             if (run == null) {
                 return Result.NOT_BUILT.toString();
             } else if (run.isBuilding()) {
@@ -189,9 +197,9 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             } else {
                 return run.getTimestamp().getTime().toString() + " - " + run.getResult().toString();
             }
-        	
+
         }
-        
+
         public String getUpProjectName() {
     		return upProjectName;
     	}
