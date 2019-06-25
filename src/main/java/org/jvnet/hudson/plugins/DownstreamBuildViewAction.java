@@ -155,10 +155,12 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
 
         public String getImageUrl() {
-        	if(run == null ){
-        		initilize();
-        	}
-        	if (run == null || run.isBuilding()) {
+            if (run == null) {
+                initilize();
+            }
+            if (run == null) {
+                return BallColor.GREY.getImage();
+            } else if (run.isBuilding()) {
                 return BallColor.GREY.anime().getImage();
             } else {
                 return run.getResult().color.getImage();
