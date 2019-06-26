@@ -39,6 +39,7 @@ import java.util.List;
  *
  */
 public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction {
+
     private transient List<DownstreamBuilds> downstreamBuildList;
     private static final transient String NOT_BUILT_NUMBER = "</a>#0000<a>";
 
@@ -50,7 +51,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             addDownstreamBuilds(project.getFullName(),0);
         }
     }
-
+    
     private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
         for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
@@ -71,7 +72,8 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             }else{
             	downstreamBuild.setBuildNumber(0);
             }
-
+         
+            
             downstreamBuild.setDepth(depth);
             if (!(parentChildSize.size() > depth)) {
                 parentChildSize.add(childs.size());
@@ -87,19 +89,20 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         return childList;
     }
 
-    public class DownstreamBuilds{
-    	private String projectName, projectUrl,upProjectName;
+    public class DownstreamBuilds {
+
+        private String projectName, projectUrl,upProjectName;
         private List<DownstreamBuilds> childs;
         private int depth, childNumber,buildNumber,upBuildNumber;
         private List<Integer> parentChildSize;
         private transient AbstractProject project;
         private transient Run<?, ?> run;
-
+        
         private void initilize(){
         	project = Hudson.getInstance().getItemByFullName(projectName, AbstractProject.class);
         	run = project.getBuildByNumber(buildNumber);
         }
-
+        
         public List<Integer> getParentChildSize() {
             return parentChildSize;
         }
@@ -127,7 +130,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         public int getBuildNumber() {
         	return buildNumber;
         }
-
+        
         public String currentBuildNumber() {
         	if(buildNumber == 0){
         		return NOT_BUILT_NUMBER;
@@ -152,15 +155,18 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
 
         public String getImageUrl() {
-            if(run == null ){
-         	  initilize();
-              return BallColor.GREY.getImage();
-         	}
-        	else if(run.isBuilding())
-        	{
-                return BallColor.GREY.anime().getImage();
+        	if(run == null ) {
+        		initilize();
         	}
-        	return run.getResult().color.getImage();
+        	if(run == null) {
+                  return BallColor.GREY.getImage();
+                }
+        	else if(run.isBuilding()) {
+                  return BallColor.GREY.anime().getImage();
+        	}
+                else {
+                  return run.getResult().color.getImage();
+                }
         }
 
         public List<DownstreamBuilds> getChilds() {
@@ -179,7 +185,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         	if(project == null ){
         		initilize();
         	}
-
+            
             if (run == null) {
                 return Result.NOT_BUILT.toString();
             } else if (run.isBuilding()) {
@@ -187,9 +193,9 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             } else {
                 return run.getTimestamp().getTime().toString() + " - " + run.getResult().toString();
             }
-
+        	
         }
-
+        
         public String getUpProjectName() {
     		return upProjectName;
     	}
