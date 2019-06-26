@@ -23,14 +23,12 @@
  */
 package org.jvnet.hudson.plugins;
 
-import org.jvnet.hudson.plugins.DownstreamBuildViewWrapper.DescriptorImpl;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.BallColor;
 import hudson.model.Hudson;
 import hudson.model.Result;
 import hudson.model.Run;
-import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -153,11 +151,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             this.childNumber = childNumber;
         }
 
-        public DescriptorImpl getDescriptorImpl() {
-    		return (DescriptorImpl) Jenkins.getInstance().getDescriptorOrDie(DownstreamBuildViewWrapper.class);
-    	}
         public String getImageUrl() {
-        	DescriptorImpl descriptor = getDescriptorImpl();
             if(run == null ){
          	  initilize();
               return BallColor.GREY.getImage();
