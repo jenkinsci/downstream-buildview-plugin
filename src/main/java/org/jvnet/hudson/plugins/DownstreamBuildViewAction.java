@@ -155,14 +155,18 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         }
 
         public String getImageUrl() {
-        	if(run == null ){
+        	if(run == null ) {
         		initilize();
         	}
-        	if (run == null || run.isBuilding()) {
-                return BallColor.GREY.anime().getImage();
-            } else {
-                return run.getResult().color.getImage();
-            }
+        	if(run == null) {
+                  return BallColor.GREY.getImage();
+                }
+        	else if(run.isBuilding()) {
+                  return BallColor.GREY.anime().getImage();
+        	}
+                else {
+                  return run.getResult().color.getImage();
+                }
         }
 
         public List<DownstreamBuilds> getChilds() {
