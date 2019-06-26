@@ -160,15 +160,11 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
         	DescriptorImpl descriptor = getDescriptorImpl();
             if(run == null ){
          	  initilize();
+              return BallColor.GREY.getImage();
          	}
-        	if(run == null || run.isBuilding())
+        	else if(run.isBuilding())
         	{
-        	  if(descriptor.isDisableBlink() == false){
                 return BallColor.GREY.anime().getImage();
-        	  }
-        	  else{
-                return BallColor.GREY.getImage();
-        	  }
         	}
         	return run.getResult().color.getImage();
         }
