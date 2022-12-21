@@ -4,63 +4,43 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>1.509.3</version>
+    <version>4.53</version>
+    <relativePath />
   </parent>
 
   <groupId>org.jvnet.hudson.plugins</groupId>
   <artifactId>downstream-buildview</artifactId>
   <name>Downstream build view</name>
-  <version>1.10-SNAPSHOT</version>
+  <version>${changelist}</version>
   <packaging>hpi</packaging>
 
   <description>This plug-in allows you to view the full status all the downstream builds so that we can graphically see that everything for this build has been completed successfully.</description>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Downstream+buildview+plugin</url>
 
   <scm>
-      <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+      <connection>scm:git:https://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
       <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
       <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+      <tag>${scmTag}</tag>
   </scm>
 
-  <developers>
-    <developer>
-      <id>shinodkm</id>
-      <name>Shinod Mohandas</name>
-      <email>shinodkm@gmail.com</email>
-      <url>http://in.linkedin.com/in/shinodkm</url>
-      <organization>Ushus Technologies</organization>
-      <organizationUrl>http://www.ushustech.com/</organizationUrl>
-      <timezone>+5:30</timezone>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-    <developer>
-      <name>Rajesh Nair</name>
-      <email>rajesh.nair.mit@gmail.com</email>
-      <organization>Ushus technologies</organization>
-      <organizationUrl>http://www.ushustech.com/</organizationUrl>
-      <timezone>+5:30</timezone>
-      <roles>
-        <role>Developer</role>
-      </roles>
-    </developer>
-  </developers>
-  <organization>
-    <name>Ushus Technologies</name>
-    <url>http://www.ushustech.com/</url>
-  </organization>
+  <properties>
+    <changelist>999999-SNAPSHOT</changelist>
+    <jenkins.version>2.361.4</jenkins.version>
+    <!-- TODO fix violations -->
+    <spotbugs.threshold>High</spotbugs.threshold>
+  </properties>
 
   <repositories>
     <repository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>repo.jenkins-ci.org</id>
-      <url>http://repo.jenkins-ci.org/public/</url>
+      <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
 </project>
