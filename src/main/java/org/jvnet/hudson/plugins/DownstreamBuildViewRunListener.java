@@ -47,7 +47,7 @@ public final class DownstreamBuildViewRunListener extends RunListener<AbstractBu
     /**
      * {@inheritDoc}
      * 
-     * Adds {@link DownstreamBuildViewAction} to the build. Do this in <tt>onCompleted</tt>
+     * Adds {@link DownstreamBuildViewAction} to the build. Do this in {@code onCompleted}
      * affected.
      */
     @Override
