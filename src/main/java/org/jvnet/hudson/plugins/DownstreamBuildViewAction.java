@@ -46,34 +46,32 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
     @Override public void onAttached(Run<?, ?> r) {
         super.onAttached(r);
         List<AbstractProject> childs = build.getProject().getDownstreamProjects();
-        for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
-            AbstractProject project = iterator.next();
-            addDownstreamBuilds(project.getFullName(),0);
+        for (AbstractProject project : childs) {
+            addDownstreamBuilds(project.getFullName(), 0);
         }
     }
     
     private List<DownstreamBuilds> findDownstream(List<AbstractProject> childs, int depth,List<Integer> parentChildSize,String upProjectName,int upBuildNumber) {
     	List<DownstreamBuilds> childList = new ArrayList<DownstreamBuilds>();
-        for (Iterator<AbstractProject> iterator = childs.iterator(); iterator.hasNext();) {
-            AbstractProject project = iterator.next();
+        for (AbstractProject project : childs) {
             DownstreamBuilds downstreamBuild = new DownstreamBuilds();
             downstreamBuild.setProjectName(project.getFullName());
             downstreamBuild.setProjectUrl(project.getUrl());
             AbstractProject upproject = Hudson.getInstance().getItemByFullName(upProjectName, AbstractProject.class);
-            if(upBuildNumber!= 0){
-            	AbstractBuild upBuild = (AbstractBuild)upproject.getBuildByNumber(upBuildNumber);
-            	if(upBuild != null){
-            		for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
-            			downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getFullName()));
-            		}
-            	}else {
-            		downstreamBuild.setBuildNumber(0);
-            	}
-            }else{
-            	downstreamBuild.setBuildNumber(0);
+            if (upBuildNumber != 0) {
+                AbstractBuild upBuild = (AbstractBuild) upproject.getBuildByNumber(upBuildNumber);
+                if (upBuild != null) {
+                    for (DownstreamBuildViewAction action : upBuild.getActions(DownstreamBuildViewAction.class)) {
+                        downstreamBuild.setBuildNumber(action.getDownstreamBuildNumber(project.getFullName()));
+                    }
+                } else {
+                    downstreamBuild.setBuildNumber(0);
+                }
+            } else {
+                downstreamBuild.setBuildNumber(0);
             }
-         
-            
+
+
             downstreamBuild.setDepth(depth);
             if (!(parentChildSize.size() > depth)) {
                 parentChildSize.add(childs.size());
@@ -82,7 +80,7 @@ public class DownstreamBuildViewAction extends AbstractDownstreamBuildViewAction
             downstreamBuild.setChildNumber(childs.size());
             List<AbstractProject> childProjects = project.getDownstreamProjects();
             if (!childProjects.isEmpty()) {
-                downstreamBuild.setChilds(findDownstream(childProjects,depth + 1, parentChildSize,project.getFullName(),downstreamBuild.getBuildNumber()));
+                downstreamBuild.setChilds(findDownstream(childProjects, depth + 1, parentChildSize, project.getFullName(), downstreamBuild.getBuildNumber()));
             }
             childList.add(downstreamBuild);
         }
